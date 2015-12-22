@@ -643,6 +643,32 @@ class TobiiTracker(BaseEyeTracker):
 			return gazepos[0], gazepos[1]
 		else:
 			return gazepos[2], gazepos[3]
+
+
+	def eye_position_3d(self):
+
+		"""Returns the position of the tracked eye in 3D space
+		given in the User Coordnate System
+
+		arguments
+		None
+
+		returns
+		eyepos	--	an (x,y,z) tuple or a (-1,-1,-1) on an error
+		"""
+
+		# get new eye position
+		eyepos = self.controller.getCurrentEyePosition3D()
+
+		# if eye position is invalid, return missing value
+		if None in eyepos:
+			return (-1,-1,-1)
+
+		# return eye position x,y,z
+		if self.eye_used == self.left_eye or self.eye_used == self.binocular:
+			return eyepos[0], eyepos[1], eyepos[2]
+		else:
+			return eyepos[3], eyepos[4], eyepos[5]
 	
 	
 	def send_command(self, cmd):
@@ -1829,6 +1855,51 @@ class TobiiController:
 		else:
 			return self.getGazePosition(self.gazeData[-1])
 	
+	def getEyePosition3D(self,gaze):
+
+		"""Extracts the 3D eye position for both eyes in the User Coodinate
+		System from the Tobii gaze struct
+
+		arguments
+		gaze		--	Tobii gaze struct
+
+		keyword arguments
+		None
+
+		returns
+		eyepos	--	a (Lx,Ly,Lz,Rx,Ry,Rz) tuple for the 3D eye position
+					of both eyes
+		"""
+
+		return (gaze.LeftEyePosition3D.x,
+				gaze.LeftEyePosition3D.y,
+				gaze.LeftEyePosition3D.z,
+				gaze.RightEyePosition3D.x,
+				gaze.RightEyePosition3D.y,
+				gaze.RightEyePosition3D.z)
+
+	def getCurrentEyePosition3D(self):
+
+		"""Provides the newest 3D eye position in User Coordinate System
+
+		arguments
+		None
+
+		keyword arguments
+		None
+
+		returns
+		eyppos	--	a (Lx,Ly,Lz,Rx,Ry,Rz) tuple for the 3D eye position
+					of both eyes or (None,None,None,None,None,None) if
+					no new sample is availabe
+		"""
+
+		if len(self.gazeData) == 0:
+			return (None,None,None,None,None,None)
+		else:
+			return self.getEyePosition3D(self.gazeData[-1])
+
+
 	def setDataFile(self,filename):
 		
 		"""Opens a new textfile and writes date, time and screen resolution
