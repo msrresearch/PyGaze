@@ -648,7 +648,7 @@ class TobiiTracker(BaseEyeTracker):
 	def eye_position_3d(self):
 
 		"""Returns the position of the tracked eye in 3D space
-		given in the User Coordnate System
+		given in the User Coordinate System
 
 		arguments
 		None
@@ -669,6 +669,29 @@ class TobiiTracker(BaseEyeTracker):
 			return eyepos[0], eyepos[1], eyepos[2]
 		else:
 			return eyepos[3], eyepos[4], eyepos[5]
+
+
+	def gaze_position_3d(self):
+
+		"""Returns the gaze position for the tracked eye in the User
+		Coordinate System.
+
+		arguments
+		None
+
+		returns
+		gazepos	--	a (x,y,z) tuple or a (-1,-1,-1) on an error
+		"""
+
+		gazepos = self.controller.getCurrentGazePosition3D()
+
+		if None in gazepos:
+			return (-1,-1,-1)
+
+		if self.eye_used == self.left_eye or self.eye_used == self.binocular:
+			return gazepos[0], gazepos[1], gazepos[2]
+		else:
+			return gazepos[3], gazepos[4], gazepos[5]
 	
 	
 	def send_command(self, cmd):
@@ -1891,13 +1914,59 @@ class TobiiController:
 		returns
 		eyppos	--	a (Lx,Ly,Lz,Rx,Ry,Rz) tuple for the 3D eye position
 					of both eyes or (None,None,None,None,None,None) if
-					no new sample is availabe
+					no new sample is available
 		"""
 
 		if len(self.gazeData) == 0:
 			return (None,None,None,None,None,None)
 		else:
 			return self.getEyePosition3D(self.gazeData[-1])
+	
+
+	def getGazePosition3D(self,gaze):
+
+		"""Extracts the 3D gaze position for poth eyes in the User Coordinate
+		System from the Tobii gaze struct
+
+		arguments
+		gaze		--	Tobii gaze struct
+
+		keyword arguments
+		None
+
+		returns
+		gazepos	--	a (Lx,Ly,Lz,Rx,Ry,Rz) tuple for the 3D gaze Position of
+		both eyes
+		"""
+
+		return (gaze.LeftGazePoint3D.x,
+				gaze.LeftGazePoint3D.y,
+				gaze.LeftGazePoint3D.z,
+				gaze.RightGazePoint3D.x,
+				gaze.RightGazePoint3D.y,
+				gaze.RightGazePoint3D.z)
+
+
+	def getCurrentGazePosition3D(self):
+
+		"""Provides the newest 3D gaze position in the User Coordinate System
+
+		arguments
+		None
+
+		keyword arguments
+		None
+
+		returns
+		gazepos	--	a (Lx,Ly,Lz,Rx,Ry,Rz) tuple for the 3D gaze position of
+					both eyes or (None,None,None,None,None,None) if no new
+					gaze position is availabele
+		"""
+
+		if len(self.gazeData) == 0:
+			return (None,None,None,None,None,None)
+		else:
+			return self.getGazePosition3D(self.gazeData[-1])
 
 
 	def setDataFile(self,filename):
