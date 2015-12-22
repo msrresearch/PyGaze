@@ -693,6 +693,27 @@ class TobiiTracker(BaseEyeTracker):
 		else:
 			return gazepos[3], gazepos[4], gazepos[5]
 	
+
+	def gaze_vector(self):
+
+		"""Returns the current gaze vector for the tracked eye
+
+		arguments
+		None
+
+		returns
+		gazevector	--	a (x,y,z) tuple or a (0,0,0) on an error
+		"""
+
+		eyepos = self.eye_position_3d()
+		gazepos = self.gaze_position_3d()
+
+		gazevector = []
+		for i in range(3):
+			gazevector.append(eyepos[i] - gazepos[i])
+
+		return tuple(gazevector)
+	
 	
 	def send_command(self, cmd):
 
