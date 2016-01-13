@@ -71,8 +71,8 @@ class EyeTribeTracker(BaseEyeTracker):
 	"""A class for EyeTribeTracker objects"""
 
 	def __init__(self, display, logfile=settings.LOGFILE,
-		eventdetection=settings.EVENTDETECTION, saccade_velocity_threshold=35,
-		saccade_acceleration_threshold=9500, **args):
+		eventdetection=settings.EVENTDETECTION, saccade_velocity_threshold=settings.SACCVELTHRESH,
+		saccade_acceleration_threshold=settings.SACCACCTHRESH, **args):
 
 		"""Initializes the EyeTribeTracker object
 		

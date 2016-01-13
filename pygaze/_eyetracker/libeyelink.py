@@ -69,7 +69,8 @@ class libeyelink(BaseEyeTracker):
 	def __init__(self, display, resolution=settings.DISPSIZE,
 		data_file=settings.LOGFILENAME+".edf", fg_color=settings.FGC,
 		bg_color=settings.BGC, eventdetection=settings.EVENTDETECTION,
-		saccade_velocity_threshold=35, saccade_acceleration_threshold=9500,
+		saccade_velocity_threshold=settings.SACCVELTHRESH,
+		saccade_acceleration_threshold=settings.SACCACCTHRESH,
 		force_drift_correct=True, pupil_size_mode=settings.EYELINKPUPILSIZEMODE,
 		**args):
 
