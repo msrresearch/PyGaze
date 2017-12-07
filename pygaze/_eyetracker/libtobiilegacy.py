@@ -25,6 +25,8 @@ import copy
 import math
 import numpy
 
+import time
+
 from pygaze import settings
 from pygaze.libtime import clock
 import pygaze
@@ -181,6 +183,8 @@ class TobiiTracker(BaseEyeTracker):
 		self.controller.datafile.write("acceleration threshold: %s degrees/second**2\n" % self.accthresh)
 		self.controller.datafile.write("pygaze initiation report end\n")
 
+		self.gaze_data_call_file_name = 'gaze_data_call_time_'+str(time.time())
+
 
 	def calibrate(self, calibrate=True, validate=True):
 		
@@ -267,7 +271,7 @@ class TobiiTracker(BaseEyeTracker):
 			prevsample = ()
 			for i in range(0,self.nvalsamples):
 				# add new sample to list
-				newsample = self.controller.getCurrentGazePosition()
+				newsample = self.controller.getCurrentGazePosition()[0]
 				if newsample != prevsample and newsample != (None,None,None,None):
 					lx, ly, rx, ry = newsample
 					lxsamples[i] = lx
@@ -641,8 +645,10 @@ class TobiiTracker(BaseEyeTracker):
 		"""
 
 		# get new sample		
-		gazepos = self.controller.getCurrentGazePosition()
+		gazepos, tracker_time, cpu_time_gazepos = self.controller.getCurrentGazePosition()
 		
+		with open(self.gaze_data_call_file_name, 'a') as test_file:
+			test_file.write(str(cpu_time_gazepos)+'\t'+str(tracker_time)+'\t'+str(time.time())+'\n')
 		# if sample is invalid, return missing value
 		if None in gazepos:
 			return (-1,-1)
@@ -1221,7 +1227,9 @@ class TobiiController:
 		self.gazeData = []
 		self.eventData = []
 		self.datafile = None
-		
+
+		self.gaze_data_call_file_name = 'gaze_data_call_time_'+str(time.time())
+
 		# initialize communications
 		tobii.eye_tracking_io.init()
 		self.clock = tobii.eye_tracking_io.time.clock.Clock()
@@ -1816,7 +1824,7 @@ class TobiiController:
 				int(gaze.LeftGazePoint2D.y*self.disp.dispsize[1]),
 				int(gaze.RightGazePoint2D.x*self.disp.dispsize[0]),
 				int(gaze.RightGazePoint2D.y*self.disp.dispsize[1]))
-	
+
 	def getCurrentGazePosition(self):
 		
 		"""Provides the newest gaze position sample
@@ -1834,10 +1842,11 @@ class TobiiController:
 		"""
 		
 		if len(self.gazeData)==0:
-			return (None,None,None,None)
+			return (None,None,None,None), None, time.time()
 		else:
-			return self.getGazePosition(self.gazeData[-1])
-	
+			gaze_data = self.gazeData[-1]
+			return self.getGazePosition(gaze_data), gaze_data.Timestamp, time.time()
+
 	def setDataFile(self,filename):
 		
 		"""Opens a new textfile and writes date, time and screen resolution
