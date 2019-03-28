@@ -423,3 +423,95 @@ class BaseScreen:
 		"""
 
 		pass
+
+
+	def create_video(self, video):
+
+		"""
+		Create a video on the Screen.
+
+		arguments
+
+		video		--	a full path to a video file
+
+		keyword arguments
+
+		None
+
+		returns
+
+		video_obj	--	A Video object to control the created video.
+		"""
+
+		video_obj = self.Video(video)
+		return video_obj
+
+
+	class Video:
+
+		"""
+		A class for PyGaze Video objects to be shown on a PyGaze Screen object.
+		"""
+
+		def __init__(self, filename):
+			print('This feature is not implemented yet.')
+
+		def play(self):
+
+			"""
+			Start the video playback.
+
+			arguments
+
+			None
+
+			keyword arguments
+
+			None
+
+			returns
+
+			None
+			"""
+
+			pass
+
+		def pause(self):
+
+			"""
+			Pause the video playback.
+
+			arguments
+
+			None
+
+			keyword arguments
+
+			None
+
+			returns
+
+			None
+			"""
+
+			pass
+
+		def stop(self):
+
+			"""
+			Stop the video playback.
+
+			arguments
+
+			None
+
+			keyword arguments
+
+			None
+
+			returns
+
+			None
+			"""
+
+			pass

@@ -42,6 +42,7 @@ from psychopy.visual import Rect
 from psychopy.visual import ShapeStim
 from psychopy.visual import TextStim
 from psychopy.visual import ImageStim
+from psychopy.visual import MovieStim3
 # Line seems to be broken; see PsychoPyScreen.draw_line below
 #from psychopy.visual import Line
 
@@ -516,6 +517,108 @@ class PsychoPyScreen(BaseScreen):
 
 		if colour != None:
 			self.bgc = colour
+
+
+	def create_video(self, video, pos=None):
+
+		"""
+		Create a video on the Screen.
+
+		arguments
+
+		video		--	a full path to a video file
+
+		keyword arguments
+
+		None
+
+		returns
+
+		video_obj	--	A Video object to control the created video.
+		"""
+
+		if pos == None:
+			pos = (self.dispsize[0]/2, self.dispsize[1]/2)
+
+		pos = pos2psychopos(pos, dispsize=self.dispsize)
+
+		video_obj = self.Video(video, self.dispsize, self.screen, pos)
+		return video_obj
+
+
+	class Video:
+
+		"""
+		A class for PyGaze Video objects to be shown on a PyGaze Screen object.
+		"""
+
+		def __init__(self, filename, dispsize, screen, pos):
+
+			self.psychomovie = MovieStim3(pygaze.expdisplay, filename=filename, pos=pos)
+			screen.append(self.psychomovie)
+
+		def play(self):
+
+			"""
+			Start the video playback.
+
+			arguments
+
+			None
+
+			keyword arguments
+
+			None
+
+			returns
+
+			None
+			"""
+
+			print('play')
+			self.psychomovie.play()
+
+		def pause(self):
+
+			"""
+			Pause the video playback.
+
+			arguments
+
+			None
+
+			keyword arguments
+
+			None
+
+			returns
+
+			None
+			"""
+
+			print('pause')
+			self.psychomovie.pause()
+
+		def stop(self):
+
+			"""
+			Stop the video playback.
+
+			arguments
+
+			None
+
+			keyword arguments
+
+			None
+
+			returns
+
+			None
+			"""
+
+			print('stop')
+			self.psychomovie.stop()
 
 
 # # # # # # #
